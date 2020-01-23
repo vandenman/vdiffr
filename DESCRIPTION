@@ -44,7 +44,8 @@ Imports:
     shiny,
     testthat (>= 1.0.0),
     usethis (>= 1.4.0),
-    xml2 (>= 1.0.0)
+    xml2 (>= 1.0.0),
+    rsvg
 Suggests:
     crayon,
     ggplot2 (>= 3.2.0),
