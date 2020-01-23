@@ -13,8 +13,14 @@
 collect_cases <- function(package = ".", filter = NULL, invert = FALSE) {
   on.exit(set_active_collecter(NULL))
 
-  message("Running testthat to collect visual cases\n\n",
-    "  N = New visual case\n  X = Failed doppelganger\n  o = Successful doppelganger\n")
+  if (isTRUE(getOption("vdiffr.partial_match", FALSE)))
+    message("Running testthat to collect visual cases\n\n",
+      "  N = New visual case\n  X = Failed doppelganger\n  P = Partial doppelganger\n",
+      "  o = Successful doppelganger\n")
+  else
+    message("Running testthat to collect visual cases\n\n",
+            "  N = New visual case\n  X = Failed doppelganger\n",
+            "  o = Successful doppelganger\n")
   package <- devtools::as.package(package)
   reporter <- vdiffrReporter$new(package$path)
   suppressMessages(
@@ -223,6 +229,9 @@ case <- function(case) {
 mismatch_case <- function(case) {
   structure(case, class = c("mismatch_case", "case"))
 }
+partial_mismatch_case <- function(case) {
+  structure(case, class = c("partial_mismatch_case", "case"))
+}
 new_case <- function(case) {
   structure(case, class = c("new_case", "case"))
 }
@@ -238,6 +247,9 @@ is_case <- function(case) {
 }
 is_mismatch_case <- function(case) {
   inherits(case, "mismatch_case")
+}
+is_partial_mismatch_case <- function(case) {
+  inherits(case, "partial_mismatch_case")
 }
 is_new_case <- function(case) {
   inherits(case, "new_case")

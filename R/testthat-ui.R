@@ -153,7 +153,7 @@ expect_doppelganger <- function(title,
   ))
 
   if (file.exists(path)) {
-    exp <- case_compare(case)
+    exp <- case_compare(case, ...)
   } else {
     exp <- case_declare(case, fig_name)
   }
@@ -174,7 +174,10 @@ str_standardise <- function(s, sep = "-") {
   s
 }
 
-case_compare <- function(case) {
+case_compare <- function(case,
+                         partial_match       = getOption("vdiffr.partial_match", FALSE),
+                         partial_match_is_ok = getOption("vdiffr.partial_match_is_ok", FALSE),
+                         partial_tolerance   = getOption("vdiffr.partial_match_tolerance", 1)) {
   # Skipping early to avoid running `compare_files()` on machines
   # performing sanitizer checks
   if (!is_ci()) {
@@ -187,10 +190,17 @@ case_compare <- function(case) {
     case <- success_case(case)
     maybe_collect_case(case)
     return(match_exp("TRUE", case))
-  }
 
-  case <- mismatch_case(case)
-  maybe_collect_case(case)
+  } else if (partial_match && compare_bitmaps(case$testcase, normalizePath(case$path),
+                                              partial_tolerance)) {
+    case <- partial_mismatch_case(case)
+    maybe_collect_case(case)
+    if (partial_match_is_ok)
+      return(match_exp("TRUE", case))
+  } else {
+    case <- mismatch_case(case)
+    maybe_collect_case(case)
+  }
 
   if (is_null(active_collecter())) {
     push_log(case)
@@ -220,14 +230,20 @@ new_exp <- function(msg, case) {
   new_expectation(msg, case, "skip", "vdiffr_new")
 }
 match_exp <- function(msg, case) {
-  new_expectation(msg, case, "success", "vdiffr_match")
+  if (is_partial_mismatch_case(case))
+    new_expectation(msg, case, "success", "vdiffr_partial")
+  else
+    new_expectation(msg, case, "success", "vdiffr_match")
 }
 mismatch_exp <- function(msg, case) {
   if (is_vdiffr_stale()) {
     msg <- "The vdiffr engine is too old. Please update vdiffr and revalidate the figures."
     new_expectation(msg, case, "skip", "vdiffr_mismatch")
   } else if (is_ci()) {
-    new_expectation(msg, case, "failure", "vdiffr_mismatch")
+    if (is_partial_mismatch_case(case))
+      new_expectation(msg, case, "failure", "vdiffr_partial")
+    else
+      new_expectation(msg, case, "failure", "vdiffr_mismatch")
   } else {
     new_expectation(msg, case, "skip", "vdiffr_mismatch")
   }
