@@ -8,6 +8,11 @@
     shift + ENTER = Validate active group
     ESC = Quit app
 
+- Failure diffs are now logged in `vdiffr.Rout.fail` when the `CI`
+  environment variable is set. This makes it easier to investigate
+  remote failures on Travis etc (#79).
+
+
 # vdiffr 0.3.1
 
 This release makes vdiffr compatible with ggplot2 3.2.0. It also
