@@ -177,7 +177,8 @@ str_standardise <- function(s, sep = "-") {
 case_compare <- function(case,
                          partial_match       = getOption("vdiffr.partial_match", FALSE),
                          partial_match_is_ok = getOption("vdiffr.partial_match_is_ok", FALSE),
-                         partial_tolerance   = getOption("vdiffr.partial_match_tolerance", 1)) {
+                         partial_tolerance   = getOption("vdiffr.partial_match_tolerance", 1),
+                         partial_fun         = getOption("vdiffr.partial_match_fun", compare_abs_difference)) {
   # Skipping early to avoid running `compare_files()` on machines
   # performing sanitizer checks
   if (!is_ci()) {
@@ -192,7 +193,7 @@ case_compare <- function(case,
     return(match_exp("TRUE", case))
 
   } else if (partial_match && compare_bitmaps(case$testcase, normalizePath(case$path),
-                                              partial_tolerance)) {
+                                              tolerance = partial_tolerance, compare_fun = partial_fun)) {
     case <- partial_mismatch_case(case)
     maybe_collect_case(case)
     if (partial_match_is_ok)

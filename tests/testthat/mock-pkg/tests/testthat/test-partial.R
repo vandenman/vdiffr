@@ -1,5 +1,6 @@
 context("Partially mismatched plots")
 
+old_options <- options()
 options("vdiffr.partial_match"           = TRUE)
 options("vdiffr.partial_match_is_ok"     = TRUE)
 options("vdiffr.partial_match_tolerance" = 1)
@@ -18,3 +19,6 @@ test_that("mismatches are hard failures", {
   expect_doppelganger("myplot", p1_fail, "")
 })
 
+options("vdiffr.partial_match"           = FALSE)
+options("vdiffr.partial_match_is_ok"     = FALSE)
+options("vdiffr.partial_match_tolerance" = NA)
