@@ -1,5 +1,6 @@
 context("Partially mismatched plots")
 
+# toggle this in combination with devtools::test()
 options("vdiffr.partial_match_is_ok"           = TRUE)
 
 plot_original <- ggplot2::ggplot(mtcars, ggplot2::aes(disp)) + ggplot2::geom_histogram()
@@ -32,10 +33,6 @@ test_that("increasing tolerance passes test", {
 test_that("adjusting distance function works", {
 
   dist_fun <- function(...) -2
-  # dist_fun <- function(imgA, imgB) {
-  #   browser()
-  #   magick::image_compare_dist(imgA, imgB, metric = "AE")
-  # }
   options("vdiffr.partial_match"           = TRUE)
   options("vdiffr.partial_match_tolerance" = -1)
   options("vdiffr.partial_match_fun"       = dist_fun)
@@ -61,6 +58,7 @@ test_that("adjusting expect_doppelganger takes precedence over options", {
   expect_true(count_arg_fun_called)
 })
 
+# reset all options
 options("vdiffr.partial_match"           = FALSE)
 options("vdiffr.partial_match_is_ok"     = FALSE)
 options("vdiffr.partial_match_tolerance" = 0)

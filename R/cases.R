@@ -13,14 +13,10 @@
 collect_cases <- function(package = ".", filter = NULL, invert = FALSE) {
   on.exit(set_active_collecter(NULL))
 
-  if (isTRUE(getOption("vdiffr.partial_match", FALSE)))
-    message("Running testthat to collect visual cases\n\n",
-      "  N = New visual case\n  X = Failed doppelganger\n  P = Partial doppelganger\n",
-      "  o = Successful doppelganger\n")
-  else
-    message("Running testthat to collect visual cases\n\n",
-            "  N = New visual case\n  X = Failed doppelganger\n",
-            "  o = Successful doppelganger\n")
+  message("Running testthat to collect visual cases\n\n",
+    "  N = New visual case\n  X = Failed doppelganger\n  P = Partial doppelganger\n",
+    "  o = Successful doppelganger\n")
+
   package <- devtools::as.package(package)
   reporter <- vdiffrReporter$new(package$path)
   suppressMessages(
