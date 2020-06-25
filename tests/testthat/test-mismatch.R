@@ -11,5 +11,5 @@ test_that("failures are pushed to log file", {
   n_failures <- length(keep(mock_cases, inherits, "mismatch_case"))
   n_partial <- length(keep(mock_cases, inherits, "partial_mismatch_case"))
 
-  expect_identical(n_logged, n_failures + n_partial)
+  expect_identical(n_logged, n_failures)
 })
