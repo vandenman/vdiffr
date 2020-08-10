@@ -192,12 +192,17 @@ case_compare <- function(case,
     maybe_collect_case(case)
     return(match_exp("TRUE", case))
 
-  } else if (partial_match && compare_bitmaps(case$testcase, normalizePath(case$path),
-                                              tolerance = partial_tolerance, compare_fun = partial_fun)) {
-    case <- partial_mismatch_case(case)
+  } else if (partial_match) {
+
+    partial_diff_success <- compare_bitmaps(case$testcase, normalizePath(case$path), tolerance = partial_tolerance,
+                                            compare_fun = partial_fun)
+    case <- if (partial_diff_success) partial_success_case(case) else partial_mismatch_case(case)
+
     maybe_collect_case(case)
-    if (partial_match_is_ok)
+
+    if (partial_diff_success && partial_match_is_ok)
       return(match_exp("TRUE", case))
+
   } else {
     case <- mismatch_case(case)
     maybe_collect_case(case)
@@ -231,8 +236,8 @@ new_exp <- function(msg, case) {
   new_expectation(msg, case, "skip", "vdiffr_new")
 }
 match_exp <- function(msg, case) {
-  if (is_partial_mismatch_case(case))
-    new_expectation(msg, case, "success", "vdiffr_partial")
+  if (is_partial_success_case(case))
+    new_expectation(msg, case, "success", "vdiffr_partial_success")
   else
     new_expectation(msg, case, "success", "vdiffr_match")
 }
@@ -242,7 +247,7 @@ mismatch_exp <- function(msg, case) {
     new_expectation(msg, case, "skip", "vdiffr_mismatch")
   } else if (is_ci()) {
     if (is_partial_mismatch_case(case))
-      new_expectation(msg, case, "failure", "vdiffr_partial")
+      new_expectation(msg, case, "failure", "vdiffr_partial_mismatch")
     else
       new_expectation(msg, case, "failure", "vdiffr_mismatch")
   } else {
@@ -263,7 +268,7 @@ signal_expectation <- function(exp) {
   invisible(exp)
 }
 expectation_broken <- function(exp) {
-  expectation_type(exp) %in% c("failure", "mismatch", "error")
+  expectation_type(exp) %in% c("failure", "mismatch", "error", "partial_mismatch")
 }
 
 #' Add a vdiffr dependency

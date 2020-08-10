@@ -44,9 +44,10 @@ diff_text_watcher <- function(input) {
 prettify_types <- function(x) {
   ifelse(x == "mismatch_case", "Mismatched",
   ifelse(x == "partial_mismatch_case", "Partially Mismatched",
+  ifelse(x == "partial_success_case", "Partially Matched",
   ifelse(x == "new_case", "New",
   ifelse(x == "success_case", "Validated", "Orphaned")
-  )))
+  ))))
 }
 
 renderTypeInput <- function(input, reactive_cases) {
@@ -227,8 +228,7 @@ renderStatus <- function(input, reactive_cases) {
 toggleValidateBtns <- function(input, session) {
   shiny::observeEvent(input$type, {
     shiny::req(input$type)
-    message <- input$type == "success_case" ||
-      (getOption("vdiffr.partial_match_is_ok", FALSE) && input$type == "partial_mismatch_case")
+    message <- input$type == "success_case" || input$type == "partial_success_case"
     session$sendCustomMessage("toggle-validate-btns-handler", message)
   })
 }

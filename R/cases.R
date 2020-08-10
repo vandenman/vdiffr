@@ -228,6 +228,9 @@ mismatch_case <- function(case) {
 partial_mismatch_case <- function(case) {
   structure(case, class = c("partial_mismatch_case", "case"))
 }
+partial_success_case <- function(case) {
+  structure(case, class = c("partial_success_case", "case"))
+}
 new_case <- function(case) {
   structure(case, class = c("new_case", "case"))
 }
@@ -246,6 +249,9 @@ is_mismatch_case <- function(case) {
 }
 is_partial_mismatch_case <- function(case) {
   inherits(case, "partial_mismatch_case")
+}
+is_partial_success_case <- function(case) {
+  inherits(case, "partial_success_case")
 }
 is_new_case <- function(case) {
   inherits(case, "new_case")

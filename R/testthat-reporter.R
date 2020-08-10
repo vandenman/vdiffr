@@ -108,7 +108,8 @@ expectation_type <- function(exp) {
   stopifnot(inherits(exp, "expectation"))
   if (inherits(exp, "vdiffr_new")) return("new")
   if (inherits(exp, "vdiffr_mismatch")) return("mismatch")
-  if (inherits(exp, "vdiffr_partial")) return("partial")
+  if (inherits(exp, "vdiffr_partial_mismatch")) return("partial_mismatch")
+  if (inherits(exp, "vdiffr_partial_match")) return("partial_match")
   if (inherits(exp, "vdiffr_match")) return("match")
 
   gsub("^expectation_", "", class(exp)[[1]])
@@ -117,7 +118,8 @@ single_letter_summary <- function(x) {
   switch(expectation_type(x),
     new      = "N",
     mismatch = "X",
-    partial  = "P",
+    partial_mismatch  = "P",
+    partial_match     = "~",
     match    = "o",
     skip     = "S",
     success  = ".",
